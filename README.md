@@ -5,7 +5,7 @@ Blueprint in short is used to manage multiple apps in a project. The project is 
 in case if database work is needed. The project contains multiple folder named as app. The folder contains their own templates folder,static folder, ```routes.py```
 file and other stuffs if needed.
 ## 1. Structure The Project
-First i created a folder named it Project-1. Then I created my project folder, ```main.py``` (outside of myproject) file like below:
+First i created a folder named it Project-1. Then I created my project folder, ```main.py``` in the same directory (outside of myproject) file like below:
 ```
 -> Project -1
       -> project
@@ -19,7 +19,7 @@ Then I created my blog app inside myproject:
 -> main.py
 ```
 
-Then i copy-pasted the files of bootstrap blog folder:
+Then i copy-pasted all the files of bootstrap blog folder:
 
 ```
 -> Project -1
@@ -38,18 +38,18 @@ Then i copy-pasted the files of bootstrap blog folder:
 Then I created blog/templates/blog and pasted html files into them.We created templates/blog folder to avoid collision
 between the apps. If we did not put the inside folder, flask would search in default  ```templates``` folder for the templates. since we are in different
 app, so we define our templates folder like this. And put assts,css,js into static folder(after creating).I created an ```__init__.py``` file
-under myproject folder to configure everything. ```main.py``` file will only run the whole project. Inside the blog app, i created another views.py file to route
+under project folder to configure everything. ```main.py``` file will only run the whole project. Inside the blog app, i created another views.py file to route
 all the urls to their paths.
 ```
 -> Project -1
-      -> myproject
+      -> project
        |   -> blog
               |-> static
        |             ->assets
               |      ->css
        |             ->js
-              | -> templates
-       |             | -> blog
+              | -> templates                  project and main.py file should be in the same directory, not one inside another
+       |             | -> blog                for better understaing, the bar signs are used to show the foldre/files under a folder
               |          ->index.html
        |             |    ->contact.html
               |          ->about.html
@@ -91,8 +91,7 @@ def index():
     return "hellow world"
 ```
 Frist we write our bluprint varibale and Create a Blueprint instance. then blueprint variable behaves like an app. we now use ```@blog.route() ``` instead
-of normally used ```@app.route()``` .The next part is very neccessary to understand.
-The insider parts of the Blueprint will add in the next part.
+of normally used ```@app.route()``` .The next part is very neccessary to understand. The insider parts of the Blueprint will add in the next part.
 This is a very important part, because while writing the blueprint varibale, i faced many issues with templates and static files. ill explain them below.
 But for now we go to ```__init__.py``` file again and register the blueprint after importing the blueprint variable.
 
@@ -100,14 +99,13 @@ But for now we go to ```__init__.py``` file again and register the blueprint aft
 from flask import Flask
 
 app=Flask(__name__)
-#++++++added lines+++++++++++
 
 from project.blog.views import blog
 
 app.register_blueprint(blog,url_prefix="/")
 
 ```
-Note that we have to register our apps after initializing apps and databases and other stuffs. I heard thi is a good practice.
+Note that we have to register our dirrerent apps after initializing ``app`` and ``database``  and other configurations. I heard this a good practice.
 Here we first register the app, then we have defined our apps route with ```url_prefix``` variable. This is good to define the urls of each apps. This avoids
 clashes between app's route. If we would add another app in project, since we have added default "/" to first app we could say such as
 ```
@@ -122,7 +120,22 @@ After successfully running our project we now connect all the index and all the 
 
 ```blog=Blueprint("blog",__name__,template_folder="templates/blog")```
 
-We previously created templates/blog folder. This is because to avoid collision between the apps. If we did not put the inside folder, flask would search in default  ```templates``` folder for the templates. since we are in different app, so we define our templates folder like this. Then w down below we redefine index and write other functions to redirect them to their own html files.
+We previously created templates/blog folder. This is because to avoid collision between the apps. If we did not put the inside folder, flask would search in default  ```templates``` folder for the templates. since we are in different app, so we define our templates folder like this. We can confirm that by looking into the structure previously we had where we added the templates folder like this :
+```
+-> project
+ |   -> blog
+        |-> static
+               ...
+        | -> templates
+ |             | -> blog
+        |           ->index.html
+ |             |    ->contact.html
+        |          ->about.html
+ |             |    ->post.html
+        |->views.py
+ ->__init__.py
+```
+Down below we redefine index and write other functions to redirect them to their own html files.
 
 ```
 from flask import Blueprint,render_template
@@ -307,7 +320,7 @@ Afer that we have to go inside of the html files downloaded from internet. Let's
 </html>
 
 ```
-This looks really odd since it has many codes in it. But we will not worry about any of these. Our consern is only the urls. Lets look the urls in ```<nav>``` tag:
+All the html files are pretty much same here. This looks really odd since it has many codes in it. But we will not worry about any of these. Our consern is only the urls. Lets look the urls in ```<nav>``` tag:
 ```
 <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="index.html">Home</a></li>
 <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="about.html">About</a></li>
@@ -315,7 +328,7 @@ This looks really odd since it has many codes in it. But we will not worry about
 <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="contact.html">Contact</a></li>
 ```
 ### Using url_for() functions to fix the routes.
-Now we use url_for() to re-write the ```href``` var. We do this for all the ```href``` in navbar we see.
+Now we use url_for() to re-write the ```href``` var. We do this for all the ```href``` in ``navbar``.
 
 ```
 <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{{url_for('blog.index')}}">Home</a></li>
@@ -324,7 +337,7 @@ Now we use url_for() to re-write the ```href``` var. We do this for all the ```h
 <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{{url_for('blog.contact')}}">Contact</a></li>
 
 ```
-*Its worth mentioning that if we just worked without ```blueprint``` we would just write the function name in ```url_for()``` function. But now we are 
+*Its worth mentioning that if we just worked without ```blueprint```, we would just write the function name in ```url_for()``` function. But now we are 
 using apps, so we have to define them as follows : ```'blueprint_variable.function_name'```. Our blueprint variable is blog. So we used ```blog.index``` and so
 on to redirect them.
 
@@ -332,11 +345,11 @@ Now that all the navbar of the ```index.html```,```contact.html```,```about.html
 
 1.First of all we take note that all the ```<nav>``` are same for all the html files.
 
-2.All elements under ```header``` tag has differences among all the files.
+2.All elements under ```<header>``` tag has differences among all the files.
 
-3.The ```body``` of all the html files are different.
+3.The ```<body>``` of all the html files are different.
 
-So we take note of this and create some jinja syntax inside index.html file :
+So we take note of this and create some jinja syntax inside ```index.html``` file :
 
 ```
 <!DOCTYPE html>
@@ -375,7 +388,7 @@ So we take note of this and create some jinja syntax inside index.html file :
 </html>
 ```
 We made sure that the ```head```, ```navbar```, ```footer``` remains same for all the files. After that on the other files we cut all the 
- ```head```, ```navbar```, ```footer``` tags, since we are directly inheriting from index.html. we redefine their files at the top by saying:
+```head```, ```navbar```, ```footer``` tags, since we are directly inheriting from index.html. we redefine their files at the top by saying:
 
  ```
 {% extends 'index.html' %}
@@ -405,6 +418,7 @@ This would return the following error in terminal:
 127.0.0.1 - - [18/Aug/2023 21:17:19] "GET /js/scripts.js HTTP/1.1" 404 -
 127.0.0.1 - - [18/Aug/2023 21:17:19] "GET /assets/img/post-bg.jpg HTTP/1.1" 404 -
 ```
+
 Although everything is showing good, but 404 means not found. Its looking at the wrong directory. so we need to manually set the directory direction.
 After that we go to ```index.html``` file and look at the css linker tag. We relocate the ``href`` by the following :
 
@@ -418,9 +432,14 @@ Do the following for all the js and other css,jss linker tag. Now what happened 
 
 Since we no are using seperate app's ```static``` folder, not the default flask ```static``` folder, we use ```blog.static``` to tell the url_for()
 function that this is the static of the blog app. The syntax follows : ``'blueprint_variable.static_folder_name'``. In the ``views.py`` file, we 
-already defined that the path to static folder url is ```"blog/static"```. So now flask will go to this folder to look for the stuffs.
-Now we dont have to worry about the ``filename`` directory location. Flask is pointing static folder as the ``blog.static`` folder. SO all the
-files,folder under ```static``` is now available. we just write ``css.styles.css`` simply to point the css file and in case of js:
+already defined that the path to static folder url is ```"blog/static"```. And the reason for this is we structured our app previously where
+we added static folder like this :
+```
+-> project
+     -> blog
+        -> static
+```
+So now flask will go to this folder to look for the stuffs. Now we dont have to worry about the ``filename`` directory location. Flask is pointing static folder as the ``blog.static`` folder. SO all the files,folder under ```static``` is now available. we just write ``css.styles.css`` simply to point the css file and in case of js:
 
 This : ``` <script src="js/scripts.js"></script>```
  
@@ -428,13 +447,14 @@ Turned to this: ```<script src="{{url_for('blog.static',filename='js/scripts.js'
 
 Now if we reload the app, we will see a beautiful nearly completed app.
 
-``
+```
 127.0.0.1 - - [18/Aug/2023 21:51:01] "GET / HTTP/1.1" 200 -
 127.0.0.1 - - [18/Aug/2023 21:51:01] "GET /blog/static/js/scripts.js HTTP/1.1" 304 -
 127.0.0.1 - - [18/Aug/2023 21:51:01] "GET /blog/static/css/styles.css HTTP/1.1" 304 -
 127.0.0.1 - - [18/Aug/2023 21:51:01] "GET /blog/static/assets/img/home-bg.jpg HTTP/1.1" 304 -
 127.0.0.1 - - [18/Aug/2023 21:51:01] "GET /blog/static/assets/favicon.ico HTTP/1.1" 304 -
-``
+```
+
 Here 304 means it is found. So we successfully connected all the static, templates now.
 What's remaining is adding the images in the background.
 
@@ -447,7 +467,7 @@ Now we have learnt ```url_for()``` is a very powerful function in flask applicat
 
 We have to change url type. We use as usual ``url_for()`` function inside ``url()`` function:
 
-``<header class="masthead" style="background-image : url({{url_for('blog.static',filename='assets/img/home-bg.jpg')}})" >``
+```<header class="masthead" style="background-image : url({{url_for('blog.static',filename='assets/img/home-bg.jpg')}})" >```
 
 Here VS Code some erros such as :
 ``at-rule or selector expected`` or ``) expected`` types errors. But in real case, there is no error. So are good to go. Let's analyze what is happening
