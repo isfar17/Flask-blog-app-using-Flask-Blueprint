@@ -63,7 +63,7 @@ all the urls to their paths.
 
 Now inside of the ```__init__.py``` file, which is the   most important file as it contains the whole project configurations in it, i import all the
 important needed and initialize the app.
-```
+```python
 from flask import Flask
 
 
@@ -71,7 +71,7 @@ app=Flask(__name__)
 ```
 In the ```main.py``` file we write :
 
-```
+```python
 from project import app
 
 
@@ -81,7 +81,7 @@ if __name__=='__main__':
 ```
 
 Then inside the ```views.py``` file under project/blog we imoprt blueprint and write a simple route:
-```
+```python
 from flask import Blueprint,render_template
 
 blog=Blueprint("blog",__name__)
@@ -90,12 +90,12 @@ blog=Blueprint("blog",__name__)
 def index():
     return "hellow world"
 ```
-Frist we write our bluprint varibale and Create a Blueprint instance. then blueprint variable behaves like an app. we now use ```@blog.route() ``` instead
+Frist we write our bluprint varibale and Create a Blueprint instance. then blueprint variable behaves like an app. we now use ```@blog.route()``` instead
 of normally used ```@app.route()``` .The next part is very neccessary to understand. The insider parts of the Blueprint will add in the next part.
 This is a very important part, because while writing the blueprint varibale, i faced many issues with templates and static files. ill explain them below.
 But for now we go to ```__init__.py``` file again and register the blueprint after importing the blueprint variable.
 
-```
+```python
 from flask import Flask
 
 app=Flask(__name__)
@@ -108,7 +108,7 @@ app.register_blueprint(blog,url_prefix="/")
 Note that we have to register our dirrerent apps after initializing ``app`` and ``database``  and other configurations. I heard this a good practice.
 Here we first register the app, then we have defined our apps route with ```url_prefix``` variable. This is good to define the urls of each apps. This avoids
 clashes between app's route. If we would add another app in project, since we have added default "/" to first app we could say such as
-```
+```python
 app.register_blueprint(another_app,url_prefix="/secondapp")
 ```
 
@@ -118,7 +118,9 @@ Now we go to the main.py file. run the file in the terminal and see "hellow worl
 
 After successfully running our project we now connect all the index and all the static,js,img files. First we go to the ```views.py``` file. Then we write all the routing functions for the templates folder. We first re-define our Blueprint by telling the templates folders location:
 
-```blog=Blueprint("blog",__name__,template_folder="templates/blog")```
+```python
+blog=Blueprint("blog",__name__,template_folder="templates/blog")
+```
 
 We previously created templates/blog folder. This is because to avoid collision between the apps. If we did not put the inside folder, flask would search in default  ```templates``` folder for the templates. since we are in different app, so we define our templates folder like this. We can confirm that by looking into the structure previously we had where we added the templates folder like this :
 ```
@@ -137,7 +139,7 @@ We previously created templates/blog folder. This is because to avoid collision 
 ```
 Down below we redefine index and write other functions to redirect them to their own html files.
 
-```
+```python
 from flask import Blueprint,render_template
 
 blog=Blueprint("blog",__name__,template_folder="templates/blog")
@@ -164,7 +166,7 @@ Now if we run ```main.py``` file again , we will be able to see all the html fil
 
 Afer that we have to go inside of the html files downloaded from internet. Let's look inside the ```index.html``` file:
 
-```
+```html
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -321,7 +323,7 @@ Afer that we have to go inside of the html files downloaded from internet. Let's
 
 ```
 All the html files are pretty much same here. This looks really odd since it has many codes in it. But we will not worry about any of these. Our consern is only the urls. Lets look the urls in ```<nav>``` tag:
-```
+```html
 <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="index.html">Home</a></li>
 <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="about.html">About</a></li>
 <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="post.html">Sample Post</a></li>
@@ -330,7 +332,7 @@ All the html files are pretty much same here. This looks really odd since it has
 ### Using url_for() functions to fix the routes.
 Now we use url_for() to re-write the ```href``` var. We do this for all the ```href``` in ``navbar``.
 
-```
+```html
 <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{{url_for('blog.index')}}">Home</a></li>
 <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{{url_for('blog.about')}}">About</a></li>
 <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{{url_for('blog.post')}}">Sample Post</a></li>
@@ -351,7 +353,7 @@ Now that all the navbar of the ```index.html```,```contact.html```,```about.html
 
 So we take note of this and create some jinja syntax inside ```index.html``` file :
 
-```
+```html
 <!DOCTYPE html>
 <html lang="en">
     <head>     ...    </head>
@@ -390,7 +392,7 @@ So we take note of this and create some jinja syntax inside ```index.html``` fil
 We made sure that the ```head```, ```navbar```, ```footer``` remains same for all the files. After that on the other files we cut all the 
 ```head```, ```navbar```, ```footer``` tags, since we are directly inheriting from index.html. we redefine their files at the top by saying:
 
- ```
+ ```html
 {% extends 'index.html' %}
 
 other stuffs
@@ -404,7 +406,7 @@ Solution of all the problem related to flask static can be found here :
 Now we are at our final part. The static portion is stressing as its neccessary to understand the internal problem and code. Now we go back to
 our ```views.py``` file. We re-write ```blog``` again :
 
-```
+```python
 blog=Blueprint("blog",__name__,template_folder="templates/blog",static_folder="static",static_url_path="blog/static")
 ```
 
@@ -423,10 +425,14 @@ Although everything is showing good, but 404 means not found. Its looking at the
 After that we go to ```index.html``` file and look at the css linker tag. We relocate the ``href`` by the following :
 
 From this:
-```<link href="css/styles.css" rel="stylesheet" /> ```
+```html
+<link href="css/styles.css" rel="stylesheet" />
+```
 
 to this:
-```<link href="{{url_for('blog.static',filename='css/styles.css')}}" rel="stylesheet" />```
+```html
+<link href="{{url_for('blog.static',filename='css/styles.css')}}" rel="stylesheet" />
+```
 
 Do the following for all the js and other css,jss linker tag. Now what happened here?
 
@@ -441,7 +447,7 @@ we added static folder like this :
 ```
 So now flask will go to this folder to look for the stuffs. Now we dont have to worry about the ``filename`` directory location. Flask is pointing static folder as the ``blog.static`` folder. SO all the files,folder under ```static``` is now available. we just write ``css.styles.css`` simply to point the css file and in case of js:
 
-This : ``` <script src="js/scripts.js"></script>```
+This :```<script src="js/scripts.js"></script>```
  
 Turned to this: ```<script src="{{url_for('blog.static',filename='js/scripts.js')}}"></script>```
 
@@ -463,11 +469,15 @@ Any errors or not connecting images , this type of errors i faces and found solt
 
 Now we have learnt ```url_for()``` is a very powerful function in flask application. We go to ```index.html``` file and inspect where is the background image been used. We can see that in the header tag there is a ``background-image`` variable in ``header`` tag. We see:
 
-```<header class="masthead" style="background-image: url('assets/img/home-bg.jpg')">```
+```html 
+<header class="masthead" style="background-image: url('assets/img/home-bg.jpg')">
+```
 
 We have to change url type. We use as usual ``url_for()`` function inside ``url()`` function:
 
-```<header class="masthead" style="background-image : url({{url_for('blog.static',filename='assets/img/home-bg.jpg')}})" >```
+```html 
+<header class="masthead" style="background-image : url({{url_for('blog.static',filename='assets/img/home-bg.jpg')}})" >
+```
 
 Here VS Code some erros such as :
 ``at-rule or selector expected`` or ``) expected`` types errors. But in real case, there is no error. So are good to go. Let's analyze what is happening
