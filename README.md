@@ -353,7 +353,7 @@ Now that all the navbar of the ```index.html```,```contact.html```,```about.html
 
 So we take note of this and create some jinja syntax inside ```index.html``` file :
 
-```html
+```html+jinja
 <!DOCTYPE html>
 <html lang="en">
     <head>     ...    </head>
@@ -392,7 +392,7 @@ So we take note of this and create some jinja syntax inside ```index.html``` fil
 We made sure that the ```head```, ```navbar```, ```footer``` remains same for all the files. After that on the other files we cut all the 
 ```head```, ```navbar```, ```footer``` tags, since we are directly inheriting from index.html. we redefine their files at the top by saying:
 
- ```html
+ ```jinja
 {% extends 'index.html' %}
 
 other stuffs
