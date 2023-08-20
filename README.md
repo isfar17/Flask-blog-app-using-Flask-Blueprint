@@ -478,10 +478,8 @@ We have to change url type. We use as usual ``url_for()`` function inside ``url(
 <header class="masthead" style="background-image : url({{url_for('blog.static',filename='assets/img/home-bg.jpg')}})" >
 ```
 
-Here VS Code some erros such as :
-``at-rule or selector expected`` or ``) expected`` types errors. But in real case, there is no error. So are good to go. Let's analyze what is happening
-here. We removed single quotation mark, as it nowdays not neccessary according to the link above. It gives the soltution to not connecting the image problem too.
-Then as usual, we are telling that the static folder to choose ``blog.static`` and filname is just ``assets/img/all images`` since static is already accessed.
+Here VS Code might some erros such as  ``at-rule or selector expected`` or ``) expected`` types errors. But in real case, there is no error. So are good to go. Let's analyze what is happening here. We removed single quotation mark, as it nowdays not neccessary according to the link above. It gives the soltution to not connecting the image problem too. Then as usual, we are telling that the static folder to choose ``blog.static`` and filname is just ``assets/img/all images`` since static is already accessed.
+
 Save everything and the site will run perfectly.
 
 
