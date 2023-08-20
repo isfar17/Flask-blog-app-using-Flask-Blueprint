@@ -1,11 +1,10 @@
-# Tutorial on How I managed to attach raw online blog template to Flask-Blueprint
-
+# Flask Blog app with Flask-Blueprint Tutorial.
+**( The blog is a free online blog template made with boostrap which has been re-constructed and integreted into flask and flask-blueprint )**
 ### Blueprint tutorial reminder:
 Blueprint in short is used to manage multiple apps in a project. The project is run by a python file. The project contains a ```__int__.py``` file, a ```model.py```
-in case if database work is needed. The project contains multiple folder named as app. The folder contains their own templates folder,static folder, ```routes.py```
-file and other stuffs if needed.
-## 1. Structure The Project
-First i created a folder named it Project-1. Then I created my project folder, ```main.py``` in the same directory (outside of myproject) file like below:
+in case if database work is needed. The project contains multiple folder. Each folder is an app. The apps contain their own templates folder,static folder, a python file such as ``routes.py``/``views.py`` file (to write python code for different functionalities and routes for the apps) and other stuffs if needed.
+## 1. Structuring The Project
+First I created a folder named it Project-1 (which is the folder I will make my project and python file). Then I created my project folder, ```main.py``` file in the same directory (outside of project folder) like below:
 ```
 -> Project -1
       -> project
@@ -35,10 +34,10 @@ Then i copy-pasted all the files of bootstrap blog folder:
 -> main.py
 ```
 
-Then I created blog/templates/blog and pasted html files into them.We created templates/blog folder to avoid collision
+Then I created templates/blog inside blog and pasted html files into it. We created templates/blog folder to avoid collision
 between the apps. If we did not put the inside folder, flask would search in default  ```templates``` folder for the templates. since we are in different
-app, so we define our templates folder like this. And put assts,css,js into static folder(after creating).I created an ```__init__.py``` file
-under project folder to configure everything. ```main.py``` file will only run the whole project. Inside the blog app, i created another views.py file to route
+app, so we define our templates folder like this. And put assts,css,js into static folder (after creating the folder).I created an ```__init__.py``` file
+under project folder to configure everything. **```main.py``` file will only run the whole project**. Inside the blog app, i created another views.py file to route
 all the urls to their paths.
 ```
 -> Project -1
@@ -82,7 +81,7 @@ if __name__=='__main__':
 
 Then inside the ```views.py``` file under project/blog we imoprt blueprint and write a simple route:
 ```python
-from flask import Blueprint,render_template
+from flask import Blueprint,
 
 blog=Blueprint("blog",__name__)
 
@@ -100,7 +99,7 @@ from flask import Flask
 
 app=Flask(__name__)
 
-from project.blog.views import blog
+from project.blog.views import blog #dont forget to add project.appname. i ran into no module error because of this
 
 app.register_blueprint(blog,url_prefix="/")
 
@@ -109,7 +108,7 @@ Note that we have to register our dirrerent apps after initializing ``app`` and 
 Here we first register the app, then we have defined our apps route with ```url_prefix``` variable. This is good to define the urls of each apps. This avoids
 clashes between app's route. If we would add another app in project, since we have added default "/" to first app we could say such as
 ```python
-app.register_blueprint(another_app,url_prefix="/secondapp")
+app.register_blueprint(another_app,url_prefix="/secondapp") #since "/" is taken by the first app
 ```
 
 Now we go to the main.py file. run the file in the terminal and see "hellow world".
@@ -162,7 +161,7 @@ def contact():
     return render_template("contact.html")
 ```
 
-Now if we run ```main.py``` file again , we will be able to see all the html files in their own urls, but without css,js and images or in raw html files.
+Now if we run ```main.py``` file again, **we will be able to see a non css/js based basic html website**. Also we will see all the html files in their own urls, but without css,js and images or **in raw html mode**.
 
 Afer that we have to go inside of the html files downloaded from internet. Let's look inside the ```index.html``` file:
 
@@ -339,18 +338,18 @@ Now we use url_for() to re-write the ```href``` var. We do this for all the ```h
 <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{{url_for('blog.contact')}}">Contact</a></li>
 
 ```
-*Its worth mentioning that if we just worked without ```blueprint```, we would just write the function name in ```url_for()``` function. But now we are 
+**Its worth mentioning that** if we just worked without ```blueprint```, we would just write the function name in ```url_for()``` function. But now we are 
 using apps, so we have to define them as follows : ```'blueprint_variable.function_name'```. Our blueprint variable is blog. So we used ```blog.index``` and so
 on to redirect them.
 
 Now that all the navbar of the ```index.html```,```contact.html```,```about.html```,```post.html``` are same. so we bring in jinja template to make ```index.html``` as our basic html file, and then extend the file in the other html files. Lets modify it :
+***
+1. First of all we take note that all the ```<nav>``` are same for all the html files.
 
-1.First of all we take note that all the ```<nav>``` are same for all the html files.
+2. All elements under ```<header>``` tag has differences among all the files.
 
-2.All elements under ```<header>``` tag has differences among all the files.
-
-3.The ```<body>``` of all the html files are different.
-
+3. The ```<body>``` of all the html files are different.
+---
 So we take note of this and create some jinja syntax inside ```index.html``` file :
 
 ```html+jinja
